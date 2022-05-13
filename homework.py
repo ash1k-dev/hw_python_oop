@@ -1,4 +1,4 @@
-from typing import Type, Dict, List
+from typing import Type, Dict, List, ClassVar
 from dataclasses import dataclass, asdict
 
 
@@ -11,11 +11,11 @@ class InfoMessage:
     speed: float
     calories: float
 
-    MESSAGE: str = ('Тип тренировки: {training_type}; '
-                    'Длительность: {duration:.3f} ч.; '
-                    'Дистанция: {distance:.3f} км; '
-                    'Ср. скорость: {speed:.3f} км/ч; '
-                    'Потрачено ккал: {calories:.3f}.')
+    MESSAGE: ClassVar[str] = ('Тип тренировки: {training_type}; '
+                              'Длительность: {duration:.3f} ч.; '
+                              'Дистанция: {distance:.3f} км; '
+                              'Ср. скорость: {speed:.3f} км/ч; '
+                              'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
         return self.MESSAGE.format(**asdict(self))
@@ -24,11 +24,8 @@ class InfoMessage:
 class Training:
     """Базовый класс тренировки."""
 
-    """Константа для перевода значений из метров в километры"""
     M_IN_KM = 1000
-    """Количество минут в часе"""
     MINUTES_IN_HOUR = 60
-    """Расстояние, которое спортсмен преодолевает за один шаг """
     LEN_STEP = 0.65
 
     def __init__(self,
@@ -143,11 +140,9 @@ def read_package(workout_type: str, data: List[int]):
         'RUN': Running,
         'WLK': SportsWalking
     }
-    try:
-        if workout_type in workout_types:
-            return workout_types[workout_type](*data)
-    except ValueError:
-        print("В списке нет подходящего значения")
+    if workout_type in workout_types:
+        return workout_types[workout_type](*data)
+    raise ValueError('Нет такой тренировки')
 
 
 def main(training: Training) -> None:
